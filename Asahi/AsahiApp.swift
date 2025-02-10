@@ -9,9 +9,27 @@ import SwiftUI
 
 @main
 struct AsahiApp: App {
+    init() {
+        // Configure global number formatting
+        let formatter = NumberFormatter()
+        formatter.usesGroupingSeparator = false
+        formatter.numberStyle = .decimal
+        NumberFormatter.defaultFormatter = formatter
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
         }
     }
+}
+
+// Extension to provide global number formatter
+extension NumberFormatter {
+    static var defaultFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.usesGroupingSeparator = false
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
 }
