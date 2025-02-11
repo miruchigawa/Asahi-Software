@@ -10,7 +10,6 @@ import SwiftUI
 @main
 struct AsahiApp: App {
     init() {
-        // Configure global number formatting
         let formatter = NumberFormatter()
         formatter.usesGroupingSeparator = false
         formatter.numberStyle = .decimal
@@ -24,7 +23,7 @@ struct AsahiApp: App {
     }
 }
 
-// Extension to provide global number formatter
+
 extension NumberFormatter {
     static var defaultFormatter: NumberFormatter = {
         let formatter = NumberFormatter()

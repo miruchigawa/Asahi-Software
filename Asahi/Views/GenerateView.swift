@@ -19,7 +19,7 @@ struct GenerateView: View {
                     
                     GenerateButton(isGenerating: viewModel.isGenerating) {
                         Task {
-                            await viewModel.generateImage()
+                            await viewModel.generateImage(history: history)
                         }
                     }
                 }
@@ -37,6 +37,10 @@ struct GenerateView: View {
                     GenerationResultView(image: image, results: result)
                 }
             }
+        }
+        .onAppear {
+            // Update viewModel settings when currentSettings changes
+            viewModel.settings = history.currentSettings
         }
     }
 }

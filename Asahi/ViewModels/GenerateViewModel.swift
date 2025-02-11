@@ -16,7 +16,7 @@ class GenerateViewModel: ObservableObject {
         SDWebUIService(baseURL: serverURL)
     }
     
-    func generateImage() async {
+    func generateImage(history: GenerationHistory) async {
         guard !settings.prompt.isEmpty else {
             showError(message: "Please enter a prompt")
             return
@@ -33,6 +33,7 @@ class GenerateViewModel: ObservableObject {
                 generatedImage = image
                 generationResult = result
                 showResult = true
+                history.addGeneration(result)
             }
         } catch {
             showError(message: error.localizedDescription)

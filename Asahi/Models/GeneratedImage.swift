@@ -1,17 +1,32 @@
 import Foundation
 
 struct GeneratedImage: Codable, Identifiable {
-    let id: UUID = UUID()
+    var id: UUID
     let images: [String]
     let info: GenerateImageInfo
     let parameters: GenerateImageParameters
     
     private enum CodingKeys: String, CodingKey {
-        case images, info, parameters
+        case id, images, info, parameters
+    }
+    
+    init() {
+        self.id = UUID()
+        self.images = []
+        self.info = GenerateImageInfo(seed: -1, modelName: "None", modelHash: "None")
+        self.parameters = GenerateImageParameters(prompt: "", negativePrompt: "", seed: -1, steps: 20, cfgScale: 7, width: 512, height: 512, samplerName: "Euler a")
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Decode id if present, otherwise create new UUID
+        if let decodedId = try? container.decode(UUID.self, forKey: .id) {
+            self.id = decodedId
+        } else {
+            self.id = UUID()
+        }
+        
         do {
             self.images = try container.decode([String].self, forKey: .images)
         } catch {
@@ -27,24 +42,30 @@ struct GeneratedImage: Codable, Identifiable {
         }
         
         do {
-            let infoString = try container.decode(String.self, forKey: .info)
-            if let infoData = infoString.data(using: .utf8) {
+            if let infoString = try? container.decode(String.self, forKey: .info),
+               let infoData = infoString.data(using: .utf8) {
                 do {
-                    let decodedInfo = try JSONDecoder().decode(GenerateImageInfo.self, from: infoData)
-                    self.info = decodedInfo
+                    self.info = try JSONDecoder().decode(GenerateImageInfo.self, from: infoData)
                 } catch {
                     print("Error decoding info JSON: \(error)")
-                    print("Info string content: \(infoString)")
                     self.info = GenerateImageInfo(seed: parameters.seed, modelName: "None", modelHash: "None")
                 }
             } else {
-                print("Failed to convert info string to data")
-                self.info = GenerateImageInfo(seed: parameters.seed, modelName: "None", modelHash: "None")
+                // Try decoding info directly as an object
+                self.info = try container.decode(GenerateImageInfo.self, forKey: .info)
             }
         } catch {
-            print("Error decoding info string: \(error)")
-            throw error
+            print("Error decoding info: \(error)")
+            self.info = GenerateImageInfo(seed: parameters.seed, modelName: "None", modelHash: "None")
         }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(images, forKey: .images)
+        try container.encode(parameters, forKey: .parameters)
+        try container.encode(info, forKey: .info)
     }
 }
 

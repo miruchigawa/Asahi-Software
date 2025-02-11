@@ -9,14 +9,15 @@ struct GenerationResultView: View {
     @State private var showCopySuccess = false
     
     var debugInfo: String {
-        """
+        let formatter = NumberFormatter.defaultFormatter
+        return """
         Prompt: \(results.parameters.prompt)
         Negative Prompt: \(results.parameters.negativePrompt)
-        Steps: \(results.parameters.steps)
-        CFG Scale: \(results.parameters.cfgScale)
-        Size: \(results.parameters.width)×\(results.parameters.height)
+        Steps: \(formatter.string(from: NSNumber(value: results.parameters.steps)) ?? "0")
+        CFG Scale: \(formatter.string(from: NSNumber(value: results.parameters.cfgScale)) ?? "0")
+        Size: \(formatter.string(from: NSNumber(value: results.parameters.width)) ?? "0")×\(formatter.string(from: NSNumber(value: results.parameters.height)) ?? "0")
         Sampler: \(results.parameters.samplerName)
-        Seed: \(results.info.seed)
+        Seed: \(formatter.string(from: NSNumber(value: results.info.seed)) ?? "0")
         Model: \(results.info.modelName) (\(results.info.modelHash))
         """
     }
@@ -35,11 +36,11 @@ struct GenerationResultView: View {
                             .font(.headline)
                         
                         Group {
-                            InfoRow(label: "Steps", value: "\(results.parameters.steps)")
-                            InfoRow(label: "CFG Scale", value: "\(results.parameters.cfgScale)")
-                            InfoRow(label: "Size", value: "\(results.parameters.width)×\(results.parameters.height)")
+                            InfoRow(label: "Steps", value: NumberFormatter.defaultFormatter.string(from: NSNumber(value: results.parameters.steps)) ?? "0")
+                            InfoRow(label: "CFG Scale", value: NumberFormatter.defaultFormatter.string(from: NSNumber(value: results.parameters.cfgScale)) ?? "0")
+                            InfoRow(label: "Size", value: "\(NumberFormatter.defaultFormatter.string(from: NSNumber(value: results.parameters.width)) ?? "0")×\(NumberFormatter.defaultFormatter.string(from: NSNumber(value: results.parameters.height)) ?? "0")")
                             InfoRow(label: "Sampler", value: results.parameters.samplerName)
-                            InfoRow(label: "Seed", value: "\(results.info.seed)")
+                            InfoRow(label: "Seed", value: NumberFormatter.defaultFormatter.string(from: NSNumber(value: results.info.seed)) ?? "0")
                             InfoRow(label: "Model", value: "\(results.info.modelName) (\(results.info.modelHash))")
                         }
                     }
@@ -52,7 +53,6 @@ struct GenerationResultView: View {
                             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                             showSaveSuccess = true
                             
-                            // Hide success message after delay
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 showSaveSuccess = false
                             }
@@ -71,7 +71,6 @@ struct GenerationResultView: View {
                             UIPasteboard.general.string = debugInfo
                             showCopySuccess = true
                             
-                            // Hide success message after delay
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 showCopySuccess = false
                             }

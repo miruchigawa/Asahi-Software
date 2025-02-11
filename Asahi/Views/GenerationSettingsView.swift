@@ -16,7 +16,6 @@ struct GenerationSettingsView: View {
                 .font(.headline)
             
             Group {
-                // Steps with keyboard input
                 VStack(alignment: .leading) {
                     Text("Steps: \(settings.steps)")
                     HStack {
@@ -32,7 +31,6 @@ struct GenerationSettingsView: View {
                     }
                 }
                 
-                // CFG Scale with keyboard input
                 VStack(alignment: .leading) {
                     Text("CFG Scale: \(String(format: "%.1f", settings.cfgScale))")
                     HStack {
@@ -44,7 +42,6 @@ struct GenerationSettingsView: View {
                     }
                 }
                 
-                // Custom width and height inputs
                 HStack {
                     Text("Size:")
                     TextField("Width", value: $settings.width, formatter: NumberFormatter.defaultFormatter)
@@ -70,7 +67,7 @@ struct GenerationSettingsView: View {
                     TextField("Random", value: $settings.seed, formatter: NumberFormatter.defaultFormatter)
                         .keyboardType(.numberPad)
                     Button("🎲") {
-                        settings.seed = Int.random(in: 0...Int.max)
+                        settings.seed = Int.random(in: 0...9999999999)
                     }
                 }
             }
